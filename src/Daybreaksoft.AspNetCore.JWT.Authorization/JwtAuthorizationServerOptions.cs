@@ -5,6 +5,8 @@ namespace Sid.Jwt.Token.Authorization.Server
 {
     public class JwtAuthorizationServerOptions
     {
+        public string Scheme { get; set; } = "Bearer";
+
         /// <summary>
         /// Default path is /token
         /// </summary>

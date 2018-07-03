@@ -99,7 +99,7 @@ namespace Sid.Jwt.Token.Authorization.Server
 
             var response = new AccessToken
             {
-                scheme = "Bearer",
+                scheme = _options.Scheme,
                 access_token = encodedJwt,
                 expires_in = (int)_options.Expiration.TotalSeconds
             };
