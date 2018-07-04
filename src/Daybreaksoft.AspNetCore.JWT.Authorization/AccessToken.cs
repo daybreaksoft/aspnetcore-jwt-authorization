@@ -2,10 +2,10 @@
 {
     public class AccessToken
     {
-        public string scheme { get; set; }
+        public string Scheme { get; set; }
 
-        public string access_token { get; set; }
+        public string Token { get; set; }
 
-        public int expires_in { get; set; }
+        public int ExpiresIn { get; set; }
     }
 }

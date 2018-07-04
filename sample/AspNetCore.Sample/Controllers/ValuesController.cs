@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCore.Sample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ValuesController : ControllerBase
     {
         // GET api/values

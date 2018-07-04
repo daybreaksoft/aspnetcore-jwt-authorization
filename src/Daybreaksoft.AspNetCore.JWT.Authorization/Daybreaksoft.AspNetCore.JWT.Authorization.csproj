@@ -12,6 +12,7 @@
     <Copyright>©2018 Daybreaksoft</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <Description>Daybreaksoft.AspNetCore.JWT.Authorization is an middleware that implements JWT authorization server. It allows to pass values that used by verify identity, then return an access token.</Description>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

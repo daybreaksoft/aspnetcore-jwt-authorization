@@ -57,8 +57,8 @@ namespace AspNetCore.Sample
                     options.TokenValidationParameters = tokenValidationParameters;
                 });
 
-            // Add JwtTokenAuthorizationServer
-            services.AddJwtAuthorizationServer(typeof(IdentityVerification), options =>
+            // Add JwtTokenAuthorization
+            services.AddJwtAuthorization(typeof(IdentityVerification), options =>
             {
                 options.Issuer = issuer;
                 options.Audience = audience;
@@ -76,7 +76,7 @@ namespace AspNetCore.Sample
             }
 
             // Use Authorization
-            app.UseJwtAuthorizationServer();
+            app.UseJwtAuthorization();
 
             // Use Authentication
             app.UseAuthentication();

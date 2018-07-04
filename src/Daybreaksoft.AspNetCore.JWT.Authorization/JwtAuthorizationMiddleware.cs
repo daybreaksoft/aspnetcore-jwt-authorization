@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -11,18 +12,18 @@ using Newtonsoft.Json;
 
 namespace Daybreaksoft.AspNetCore.JWT.Authorization
 {
-    public class JwtAuthorizationServerMiddleware : IMiddleware
+    public class JwtAuthorizationMiddleware : IMiddleware
     {
-        private readonly IIdentityVerification _identityVerification;
-        private readonly JwtAuthorizationServerOptions _options;
-        private readonly ILogger<JwtAuthorizationServerMiddleware> _logger;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly JwtAuthorizationOptions _options;
+        private readonly ILogger<JwtAuthorizationMiddleware> _logger;
 
-        public JwtAuthorizationServerMiddleware(
-            IIdentityVerification identityVerification,
-            IOptions<JwtAuthorizationServerOptions> options,
-            ILogger<JwtAuthorizationServerMiddleware> logger = null)
+        public JwtAuthorizationMiddleware(
+            IServiceProvider serviceProvider,
+            IOptions<JwtAuthorizationOptions> options,
+            ILogger<JwtAuthorizationMiddleware> logger = null)
         {
-            _identityVerification = identityVerification;
+            _serviceProvider = serviceProvider;
             _options = options.Value;
             _logger = logger;
         }
@@ -67,7 +68,7 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
             _logger?.LogDebug("Attempting to get identity.");
 
             // Try to get identity (sign in)
-            var identity = await _identityVerification.GetIdentity(context);
+            var identity = await _serviceProvider.GetRequiredService<IIdentityVerification>().GetIdentity(context);
             if (identity == null)
             {
                 _logger?.LogError("Verify identity failed.");
@@ -114,9 +115,9 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
 
             var response = new AccessToken
             {
-                scheme = _options.Scheme,
-                access_token = encodedJwt,
-                expires_in = (int)_options.Expiration.TotalSeconds
+                Scheme = _options.Scheme,
+                Token = encodedJwt,
+                ExpiresIn = (int)_options.Expiration.TotalSeconds
             };
 
             // Serialize and return the response
