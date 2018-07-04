@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sid.Jwt.Token.Authorization.Server
+﻿namespace Daybreaksoft.AspNetCore.JWT.Authorization
 {
     public class AccessToken
     {

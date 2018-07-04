@@ -7,12 +7,8 @@ using Newtonsoft.Json;
 
 namespace AspNetCore.Sample.Services
 {
-    public class IdentityVerification : IIdentityVerification, IDisposable
+    public class IdentityVerification : IIdentityVerification
     {
-        public void Dispose()
-        {
-        }
-
         public async Task<ClaimsIdentity> GetIdentity(HttpContext context)
         {
             if (context.Request.Form["username"] == "test" && context.Request.Form["password"] == "test")
