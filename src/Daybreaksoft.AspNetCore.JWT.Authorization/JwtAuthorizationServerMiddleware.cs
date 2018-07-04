@@ -2,30 +2,39 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Sid.Jwt.Token.Authorization.Server;
 
-namespace Sid.Jwt.Token.Authorization.Server
+namespace Daybreaksoft.AspNetCore.JWT.Authorization
 {
     public class JwtAuthorizationServerMiddleware : IMiddleware
     {
-        private readonly IUserFinder _userFinder;
+        private readonly IIdentityVerification _identityVerification;
         private readonly JwtAuthorizationServerOptions _options;
         private readonly ILogger<JwtAuthorizationServerMiddleware> _logger;
 
         public JwtAuthorizationServerMiddleware(
-            IUserFinder userFinder,
+            IIdentityVerification identityVerification,
             IOptions<JwtAuthorizationServerOptions> options,
             ILogger<JwtAuthorizationServerMiddleware> logger = null)
         {
-            _userFinder = userFinder;
+            _identityVerification = identityVerification;
             _options = options.Value;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Request handling method.
+        /// </summary>
+        /// <param name="context">The Microsoft.AspNetCore.Http.HttpContext for the current request.</param>
+        /// <param name="next">The delegate representing the remaining middleware in the request pipeline.</param>
+        /// <returns>A System.Threading.Tasks.Task that represents the execution of this middleware.</returns>
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             // If the request path doesn't match, skip
@@ -47,22 +56,27 @@ namespace Sid.Jwt.Token.Authorization.Server
                 return context.Response.WriteAsync(errMessage);
             }
 
-            return GenerateToken(context);
+            return WriteTokenAsync(context);
         }
 
-        private async Task GenerateToken(HttpContext context)
+        /// <summary>
+        /// Generate token and then output if authenticated 
+        /// </summary>
+        /// <param name="context">The Microsoft.AspNetCore.Http.HttpContext for the current request.</param>
+        /// <returns></returns>
+        private async Task WriteTokenAsync(HttpContext context)
         {
             _logger?.LogDebug("Attempting to get identity.");
 
             // Try to get identity (sign in)
-            var identity = await _userFinder.GetIdentity(context);
+            var identity = await _identityVerification.GetIdentity(context);
             if (identity == null)
             {
-                _logger?.LogError("Invalid username or password.");
+                _logger?.LogError("Verify identity failed.");
 
                 context.Response.StatusCode = 400;
                 context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Invalid username or password.");
+                await context.Response.WriteAsync(_options.VerifyIdentityFailedMessage);
 
                 return;
             }
@@ -83,7 +97,10 @@ namespace Sid.Jwt.Token.Authorization.Server
             // Create the JWT and write it to a string
             _logger?.LogDebug("Attempting to generate jwt token.");
 
-            var jwtHeader = new JwtHeader(_options.SigningCredentials);
+            // build signing credentials.
+            var signingCredentials = new SigningCredentials(_options.SecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtHeader = new JwtHeader(signingCredentials);
             var jwtPayload = new JwtPayload(
                 issuer: _options.Issuer,
                 audience: _options.Audience,

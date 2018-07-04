@@ -1,17 +1,16 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
-namespace Sid.Jwt.Token.Authorization.Server
+namespace Daybreaksoft.AspNetCore.JWT.Authorization
 {
-    public static class JwtTokenAuthorizationServerAppBuilderExtensions
+    public static class JwtAuthorizationServerAppBuilderExtensions
     {
-        public static IServiceCollection AddJwtTokenAuthorizationServer(this IServiceCollection services, Type userFinderImplementation, Action<JwtAuthorizationServerOptions> configureOptions)
+        public static IServiceCollection AddJwtAuthorizationServer(this IServiceCollection services, Type implementationType, Action<JwtAuthorizationServerOptions> configureOptions)
         {
-            if (userFinderImplementation == null)
+            if (implementationType == null)
             {
-                throw new ArgumentNullException(nameof(userFinderImplementation));
+                throw new ArgumentNullException(nameof(implementationType));
             }
 
             if (configureOptions == null)
@@ -26,7 +25,7 @@ namespace Sid.Jwt.Token.Authorization.Server
 
             services.AddScoped<JwtAuthorizationServerMiddleware>();
 
-            services.AddScoped(typeof(IUserFinder), userFinderImplementation);
+            services.AddScoped(typeof(IIdentityVerification), implementationType);
 
             return services;
         }

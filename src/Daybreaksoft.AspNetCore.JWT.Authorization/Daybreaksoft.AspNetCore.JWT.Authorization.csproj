@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Daybreaksoft</Authors>
+    <Company>Daybreaksoft</Company>
+    <PackageProjectUrl>https://github.com/daybreaksoft/aspnetcore-jwt-authorization</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/daybreaksoft/aspnetcore-jwt-authorization.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>asp.net core;jwt</PackageTags>
+    <Copyright>©2018 Daybreaksoft</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <Description>Daybreaksoft.AspNetCore.JWT.Authorization is an middleware that implements JWT authorization server. It allows to pass values that used by verify identity, then return an access token.</Description>
   </PropertyGroup>
 
   <ItemGroup>

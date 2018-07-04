@@ -1,25 +1,48 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
+using Microsoft.IdentityModel.Tokens;
 
-namespace Sid.Jwt.Token.Authorization.Server
+namespace Daybreaksoft.AspNetCore.JWT.Authorization
 {
     public class JwtAuthorizationServerOptions
     {
+        /// <summary>
+        /// Indicate what's the token request scheme. Default value is Bearer.
+        /// </summary>
         public string Scheme { get; set; } = "Bearer";
 
         /// <summary>
-        /// Default path is /token
+        /// Indicate what's the token request path. Default value is /token.
         /// </summary>
         public string Path { get; set; } = "/token";
 
+        /// <summary>
+        /// If this value not be null, a { sub, 'subject'} claim will be added.
+        /// </summary>
         public string Subject { get; set; }
 
+        /// <summary>
+        /// If this value is not null, a { iss, 'issuer' } claim will be added.
+        /// </summary>
         public string Issuer { get; set; }
 
+        /// <summary>
+        /// If this value is not null, a { aud, 'audience' } claim will be added.
+        /// </summary>
         public string Audience { get; set; }
 
-        public TimeSpan Expiration { get; set; } = TimeSpan.FromMinutes(5);
+        /// <summary>
+        /// Indicate when does the token expiry. Default value is 60 mins.
+        /// </summary>
+        public TimeSpan Expiration { get; set; } = TimeSpan.FromMinutes(60);
 
-        public SigningCredentials SigningCredentials { get; set; }
+        /// <summary>
+        /// Indicate the message when verify identity failed. Default value is 
+        /// </summary>
+        public string VerifyIdentityFailedMessage { get; set; } = "Invalid username or password.";
+
+        /// <summary>
+        /// Security key
+        /// </summary>
+        public SecurityKey SecurityKey { get; set; }
     }
 }
