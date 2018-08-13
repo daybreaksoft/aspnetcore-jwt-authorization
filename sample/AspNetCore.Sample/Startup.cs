@@ -75,11 +75,12 @@ namespace AspNetCore.Sample
                 app.UseDeveloperExceptionPage();
             }
 
+            // Use Authentication
+            // Must put it before UserJwtAuthorization. Otherwize it will not decode identit info in JWTAuthroization middleware.
+            app.UseAuthentication();
+
             // Use Authorization
             app.UseJwtAuthorization();
-
-            // Use Authentication
-            app.UseAuthentication();
 
             app.UseMvc();
         }

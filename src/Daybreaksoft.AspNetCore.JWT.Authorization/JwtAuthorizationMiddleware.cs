@@ -47,7 +47,7 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
             // Request must be POST with Content-Type: application/x-www-form-urlencoded
             if (!context.Request.Method.Equals("POST") || !context.Request.HasFormContentType)
             {
-                var errMessage = $"Bad request. Request method is {context.Request.Method}. Request Content Type is {context.Request.ContentType}";
+                var errMessage = $"Bad request. Request must be application/x-www-form-urlencoded. Current request Content Type is {context.Request.ContentType}";
                 _logger?.LogError(errMessage);
 
                 context.Response.StatusCode = 400;
@@ -68,16 +68,23 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
             _logger?.LogDebug("Attempting to get identity.");
 
             // Try to get identity (sign in)
-            var identity = await _serviceProvider.GetRequiredService<IIdentityVerification>().GetIdentity(context);
-            if (identity == null)
+            var identityResult = await _serviceProvider.GetRequiredService<IIdentityVerification>().GetIdentity(context);
+            if (identityResult == null)
             {
-                _logger?.LogError("Verify identity failed.");
+                throw new ArgumentNullException(nameof(identityResult));
+            }
+            else
+            {
+                if (identityResult.Identity == null)
+                {
+                    _logger?.LogError("Verify identity failed.");
 
-                context.Response.StatusCode = 400;
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(_options.VerifyIdentityFailedMessage);
+                    context.Response.StatusCode = 400;
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync(string.IsNullOrEmpty(identityResult.ErrorMessage) ? "Invalid username or password." : identityResult.ErrorMessage);
 
-                return;
+                    return;
+                }
             }
 
             var now = DateTime.UtcNow;
@@ -91,7 +98,7 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
             {
                 claims.Add(new Claim(JwtRegisteredClaimNames.Sub, _options.Subject));
             }
-            claims.AddRange(identity.Claims);
+            claims.AddRange(identityResult.Identity.Claims);
 
             // Create the JWT and write it to a string
             _logger?.LogDebug("Attempting to generate jwt token.");

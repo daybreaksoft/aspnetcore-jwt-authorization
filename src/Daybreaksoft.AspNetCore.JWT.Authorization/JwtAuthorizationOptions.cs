@@ -34,12 +34,7 @@ public class JwtAuthorizationOptions
     /// Indicate when does the token expiry. Default value is 60 mins.
     /// </summary>
     public TimeSpan Expiration { get; set; } = TimeSpan.FromMinutes(60);
-
-    /// <summary>
-    /// Indicate the message when verify identity failed. Default value is 
-    /// </summary>
-    public string VerifyIdentityFailedMessage { get; set; } = "Invalid username or password.";
-
+        
     /// <summary>
     /// Security key
     /// </summary>
