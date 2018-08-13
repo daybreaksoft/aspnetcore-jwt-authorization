@@ -132,7 +132,6 @@ public class IdentityVerification : IIdentityVerification
     }
 }
 ```
-```
 In practice, we must use Authentication first if you want to get authorization information in JWT Authorization middleware.
 ```csharp
 public void Configure(IApplicationBuilder app, IHostingEnvironment env)
