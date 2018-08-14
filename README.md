@@ -53,7 +53,6 @@ public void ConfigureServices(IServiceCollection services)
     {
         options.Issuer = issuer;
         options.Audience = audience;
-        options.Expiration = TimeSpan.FromMinutes(60);
         options.SecurityKey = securityKey;
     });
 }
@@ -101,17 +100,13 @@ public class JwtAuthorizationOptions
     public string Audience { get; set; }
 
     /// <summary>
-    /// Indicate when does the token expiry. Default value is 60 mins.
-    /// </summary>
-    public TimeSpan Expiration { get; set; } = TimeSpan.FromMinutes(60);
-
-    /// <summary>
     /// Security key
     /// </summary>
     public SecurityKey SecurityKey { get; set; }
 }
 ```
-Implements how to verify identity. If verifies successful, then return a identity result. It includes claim identity and error message. If verify failed, return error message directly.
+Implements how to verify identity. If verifies successful, then return a identity result. 
+It includes claim identity, expiration time and error message. If verify failed, return error message directly.
 ```csharp
 public class IdentityVerification : IIdentityVerification
 {
@@ -122,8 +117,8 @@ public class IdentityVerification : IIdentityVerification
             var identity = new ClaimsIdentity();
             identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
             identity.AddClaim(new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(new { Custom1 = 1, Custom2 = 2 })));
-
-            return await Task.FromResult(new IdentityResult(identity));
+            // Allow to return custom expiration time.
+            return await Task.FromResult(new IdentityResult(identity, TimeSpan.FromSeconds(30)));
         }
         else
         {
