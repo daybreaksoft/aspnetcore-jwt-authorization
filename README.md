@@ -106,34 +106,49 @@ public class JwtAuthorizationOptions
     public TimeSpan Expiration { get; set; } = TimeSpan.FromMinutes(60);
 
     /// <summary>
-    /// Indicate the message when verify identity failed. Default value is 
-    /// </summary>
-    public string VerifyIdentityFailedMessage { get; set; } = "Invalid username or password.";
-
-    /// <summary>
     /// Security key
     /// </summary>
     public SecurityKey SecurityKey { get; set; }
 }
 ```
-Implements how to verify identity. If verifies successful, then return an claim identity.
+Implements how to verify identity. If verifies successful, then return a identity result. It includes claim identity and error message. If verify failed, return error message directly.
 ```csharp
 public class IdentityVerification : IIdentityVerification
 {
-    public async Task<ClaimsIdentity> GetIdentity(HttpContext context)
+    public async Task<IdentityResult> GetIdentity(HttpContext context)
     {
-        if (context.Request.Form["username"] == "test" && context.Request.Form["password"] == "test")
+        if (context.Request.Form["username"].ToString() == "test" && context.Request.Form["password"].ToString() == "test")
         {
             var identity = new ClaimsIdentity();
             identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
-            identity.AddClaim(new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(new {Custom1 = 1, Custom2 =2})));
+            identity.AddClaim(new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(new { Custom1 = 1, Custom2 = 2 })));
 
-            return await Task.FromResult(identity);
+            return await Task.FromResult(new IdentityResult(identity));
         }
         else
         {
-            return null;
+            return new IdentityResult("Invalid user or password.");
         }
     }
 }
 ```
+In practice, we must use Authentication first if you want to get authorization information in JWT Authorization middleware.
+```csharp
+public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+
+    // Use Authentication
+    // Must put it before UserJwtAuthorization. Otherwize it will not decode identit info in JWTAuthroization middleware.
+    app.UseAuthentication();
+
+    // Use Authorization
+    app.UseJwtAuthorization();
+
+    app.UseMvc();
+}
+```
+Inadditional, please make sure use application/x-www-form-urlencoded as conent type.
