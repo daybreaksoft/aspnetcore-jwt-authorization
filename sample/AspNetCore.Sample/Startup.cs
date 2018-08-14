@@ -62,7 +62,6 @@ namespace AspNetCore.Sample
             {
                 options.Issuer = issuer;
                 options.Audience = audience;
-                options.Expiration = TimeSpan.FromMinutes(60);
                 options.SecurityKey = securityKey;
             });
         }

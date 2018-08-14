@@ -112,7 +112,7 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
                 audience: _options.Audience,
                 claims: claims,
                 notBefore: now,
-                expires: now.Add(_options.Expiration),
+                expires: now.Add(identityResult.Expiration),
                 issuedAt: now);
 
             var jwt = new JwtSecurityToken(jwtHeader, jwtPayload);
@@ -124,7 +124,7 @@ namespace Daybreaksoft.AspNetCore.JWT.Authorization
             {
                 Scheme = _options.Scheme,
                 Token = encodedJwt,
-                ExpiresIn = (int)_options.Expiration.TotalSeconds
+                ExpiresIn = (int)identityResult.Expiration.TotalSeconds
             };
 
             // Serialize and return the response

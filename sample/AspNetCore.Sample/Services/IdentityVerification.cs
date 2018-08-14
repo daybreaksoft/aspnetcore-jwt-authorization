@@ -17,7 +17,7 @@ namespace AspNetCore.Sample.Services
                 identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
                 identity.AddClaim(new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(new { Custom1 = 1, Custom2 = 2 })));
 
-                return await Task.FromResult(new IdentityResult(identity));
+                return await Task.FromResult(new IdentityResult(identity, TimeSpan.FromSeconds(30)));
             }
             else
             {
